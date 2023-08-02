@@ -1,4 +1,5 @@
-const request = (obj: any) => {
+/*
+ const request = (obj: any) => {
 	// 获取用户本地保存的token
 	let token = "";
 	if (token) {
@@ -27,4 +28,61 @@ const request = (obj: any) => {
 	});
 };
 
-export default request;
+export default request*/
+import axios from "axios";
+import { netConfig } from "@/config/net.config";
+const { baseURL, contentType, requestTimeout, successCode } = netConfig;
+
+let tokenLose = true;
+
+const instance = axios.create({
+	baseURL,
+	timeout: requestTimeout,
+	headers: {
+		"Content-Type": contentType,
+	},
+});
+
+// request interceptor
+instance.interceptors.request.use(
+	(config) => {
+		// do something before request is sent
+		return config;
+	},
+	(error) => {
+		// do something with request error
+		return Promise.reject(error);
+	}
+);
+
+// response interceptor
+instance.interceptors.response.use(
+	/**
+	 * If you want to get http information such as headers or status
+	 * Please return  response => response
+	 */
+	(response) => {
+		const res = response.data;
+
+		// 请求出错处理
+		// -1 超时、token过期或者没有获得授权
+		if (res.status === -1 && tokenLose) {
+			tokenLose = false;
+			uni.showToast({
+				title: "服务器异常",
+				duration: 2000,
+			});
+
+			return Promise.reject(res);
+		}
+		if (successCode.indexOf(res.status) !== -1) {
+			return Promise.reject(res);
+		}
+		return res;
+	},
+	(error) => {
+		return Promise.reject(error);
+	}
+);
+
+export default instance;

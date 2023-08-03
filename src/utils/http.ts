@@ -1,11 +1,9 @@
 import axios from "axios";
-import mpAdapter from "axios-miniprogram-adapter";
 
 /*
  * 创建实例
  * 与后端服务通信
  */
-axios.defaults.adapter = mpAdapter;
 const HttpClient = axios.create({
 	// baseURL: import.meta.env.VITE_BASE_URL,
 	timeout: 50000,

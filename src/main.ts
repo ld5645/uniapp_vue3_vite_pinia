@@ -1,9 +1,9 @@
-
 import { createSSRApp, defineAsyncComponent } from "vue";
 import * as Pinia from "pinia";
 //pinia数据持久化
 import { createUnistorage } from "pinia-plugin-unistorage";
-
+//引入unocss
+import "uno.css";
 import App from "./App.vue";
 export function createApp() {
 	const app = createSSRApp(App);
